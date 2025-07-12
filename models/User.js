@@ -1,53 +1,46 @@
-const mongoose = require('mongoose'); // Mongoose library import ki
-const bcrypt = require('bcryptjs');   // Passwords hash karne ke liye
+const mongoose = require('mongoose'); 
+const bcrypt = require('bcryptjs');   
 
-// User Schema define kar rahe hain
 const UserSchema = mongoose.Schema({
-  name: { // Naya 'name' field add kiya
+  name: { 
     type: String,
-    required: [true, 'Please add a name'], // Name field mandatory hai
-    trim: true // Leading/trailing spaces remove karega
+    required: [true, 'Please add a name'], 
+    trim: true 
   },
   email: {
     type: String,
-    required: [true, 'Please add an email'], // Email field mandatory hai
-    unique: true,                           // Har email unique hona chahiye
+    required: [true, 'Please add an email'], 
+    unique: true,                         
     match: [
       /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-      'Please enter a valid email' // Email format validation
+      'Please enter a valid email' 
     ]
   },
   password: {
     type: String,
-    required: [true, 'Please add a password'], // Password field mandatory hai
-    minlength: [6, 'Password must be at least 6 characters'], // Minimum length
+    required: [true, 'Please add a password'], 
+    minlength: [6, 'Password must be at least 6 characters'], 
     select: false // Jab user data fetch hoga, toh password by default nahi dikhega (security)
   },
   createdAt: {
     type: Date,
-    default: Date.now // Jab user banega, toh creation date automatically set ho jayegi
+    default: Date.now 
   }
 });
 
-// Password ko save karne se pehle hash karna (pre-save hook)
-// IMPORTANT: Yahan 'async function' keyword use karna zaroori hai, arrow function nahi
 UserSchema.pre('save', async function (next) {
-  // Check karein ki password field modify hua hai ya naya banaya gaya hai
   if (!this.isModified('password')) {
-    next(); // Agar nahi, toh next middleware par jaao
+    next(); 
   }
 
-  // Salt generate karo (random string for hashing)
   const salt = await bcrypt.genSalt(10);
-  // Password ko hash karo aur save karo
   this.password = await bcrypt.hash(this.password, salt);
-  next(); // Next middleware par jaao
+  next(); 
 });
 
 // Password compare karne ka method (login ke liye)
-// Yeh method User model par available hoga
 UserSchema.methods.matchPassword = async function (enteredPassword) {
-  return await bcrypt.compare(enteredPassword, this.password); // Entered password ko hashed password se compare karo
+  return await bcrypt.compare(enteredPassword, this.password); 
 };
 
-module.exports = mongoose.model('User', UserSchema); // User model ko export kar rahe hain
+module.exports = mongoose.model('User', UserSchema); 

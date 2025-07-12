@@ -2,6 +2,7 @@ const express = require('express');
 const dotenv = require('dotenv'); // .env files load karne ke liye
 const connectDB = require('./config/db'); // Database connection function import kiya
 const authRoutes = require('./routes/auth'); // Authentication routes import kiye
+const bankAccountRoutes = require('./routes/bankAccounts');
 const cors = require('cors'); // CORS middleware import kiya
 
 // .env file se environment variables load karo
@@ -19,6 +20,7 @@ app.use(cors()); // CORS enable karo, taki frontend se requests accept ho sakein
 // Routes
 // /api/auth path par authRoutes ko use karo
 app.use('/api/auth', authRoutes);
+app.use('/api/bankaccounts',bankAccountRoutes );
 
 // Basic route for testing
 app.get('/', (req, res) => {
