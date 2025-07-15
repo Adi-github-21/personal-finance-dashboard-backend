@@ -27,6 +27,10 @@ const BankAccountSchema = mongoose.Schema({
         required: [true, 'Please add a currency'],
         default: 'INR',
     },
+    profilePhotoUrl: { // New field for profile photo URL
+        type: String,
+        default: '', // Default to empty string if no photo is provided
+    },
     createdAt: {
     type: Date,
     default: Date.now,

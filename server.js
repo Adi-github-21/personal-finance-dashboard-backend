@@ -4,6 +4,7 @@ const connectDB = require('./config/db'); // Database connection function import
 const authRoutes = require('./routes/auth'); // Authentication routes import kiye
 const bankAccountRoutes = require('./routes/bankAccounts');
 const cors = require('cors'); // CORS middleware import kiya
+const path = require('path'); 
 
 // .env file se environment variables load karo
 dotenv.config();
@@ -16,6 +17,8 @@ const app = express(); // Express app banayi
 // Middleware
 app.use(express.json()); // Body parser middleware: JSON request body ko parse karne ke liye
 app.use(cors()); // CORS enable karo, taki frontend se requests accept ho sakein
+
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Routes
 // /api/auth path par authRoutes ko use karo
