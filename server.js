@@ -3,6 +3,7 @@ const dotenv = require('dotenv'); // .env files load karne ke liye
 const connectDB = require('./config/db'); // Database connection function import kiya
 const authRoutes = require('./routes/auth'); // Authentication routes import kiye
 const bankAccountRoutes = require('./routes/bankAccounts');
+const invesmentRoutes = require('./routes/investments');
 const cors = require('cors'); // CORS middleware import kiya
 const path = require('path'); 
 
@@ -23,7 +24,8 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // Routes
 // /api/auth path par authRoutes ko use karo
 app.use('/api/auth', authRoutes);
-app.use('/api/bankaccounts',bankAccountRoutes );
+app.use('/api/bankaccounts', bankAccountRoutes );
+app.use('/api/investments', invesmentRoutes );
 
 // Basic route for testing
 app.get('/', (req, res) => {
