@@ -4,6 +4,7 @@ const connectDB = require('./config/db');
 const authRoutes = require('./routes/auth'); // Authentication routes import kiye
 const bankAccountRoutes = require('./routes/bankAccounts');
 const investmentRoutes = require('./routes/investments');
+const fixedDepositRoutes = require('./routes/fixedDeposits');
 const cors = require('cors'); // CORS middleware 
 const path = require('path'); 
 
@@ -24,6 +25,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/api/auth', authRoutes);
 app.use('/api/bankaccounts',bankAccountRoutes );
 app.use('/api/investments', investmentRoutes); 
+app.use('/api/fixeddeposits', fixedDepositRoutes); 
 
 // Basic route for testing
 app.get('/', (req, res) => {
