@@ -5,6 +5,7 @@ const authRoutes = require('./routes/auth'); // Authentication routes import kiy
 const bankAccountRoutes = require('./routes/bankAccounts');
 const investmentRoutes = require('./routes/investments');
 const fixedDepositRoutes = require('./routes/fixedDeposits');
+const loanRoutes = require('./routes/loans');
 const cors = require('cors'); // CORS middleware 
 const path = require('path'); 
 
@@ -26,6 +27,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/bankaccounts',bankAccountRoutes );
 app.use('/api/investments', investmentRoutes); 
 app.use('/api/fixeddeposits', fixedDepositRoutes); 
+app.use('/api/loans', loanRoutes);
 
 // Basic route for testing
 app.get('/', (req, res) => {
