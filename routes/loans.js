@@ -14,6 +14,13 @@ const calculateEmi = (principal, annualRate, tenureMonths) => {
   return isNaN(emi) ? 0 : emi; // Handle NaN case
 };
 
+// Helper function to calculate principal & interest portion for a single EMI
+const calculatePrincipalInterestForEmi = (outstandingPrincipal, monthlyInterestRate, emiAmount) => {
+  const interestPortion = outstandingPrincipal * monthlyInterestRate;
+  const principalPortion = emiAmount - interestPortion;
+  return { interestPortion, principalPortion };
+};
+
 // @route   GET /api/loans
 // @desc    Get all loans for the logged-in user
 // @access  Private
@@ -138,6 +145,58 @@ router.delete('/:id', protect, async (req, res) => {
     res.status(500).send('Server error');
   }
 });
+
+// @route   POST /api/loans/:id/pay-emi
+// @desc    Record an EMI payment for a specific loan
+// @access  Private
+router.post('/:id/pay-emi', protect, async (req, res) => {
+  const { paymentDate, amountPaid } = req.body; // paymentDate optional, amountPaid optional (default to EMI amount)
+
+  try {
+    let loan = await Loan.findById(req.params.id);
+
+    if (!loan) {
+      return res.status(404).json({ message: 'Loan not found' });
+    }
+
+    if (loan.user.toString() !== req.user.id) {
+      return res.status(401).json({ message: 'Not authorized to update this loan' });
+    }
+
+    // Check if loan is already fully paid
+    if (loan.remainingAmount <= 0) {
+      return res.status(400).json({ message: 'Loan is already fully paid.' });
+    }
+
+    const actualAmountPaid = amountPaid !== undefined && amountPaid !== null ? amountPaid : loan.emiAmount;
+    if (actualAmountPaid <= 0) {
+        return res.status(400).json({ message: 'Payment amount must be positive.' });
+    }
+
+    const monthlyRate = loan.interestRate / (12 * 100);
+    const { principalPortion, interestPortion } = calculatePrincipalInterestForEmi(loan.remainingAmount, monthlyRate, actualAmountPaid);
+
+    // Update remaining amount
+    loan.remainingAmount -= principalPortion;
+    if (loan.remainingAmount < 0) loan.remainingAmount = 0; // Ensure it doesn't go below zero
+
+    // Update total interest paid
+    loan.totalInterestPaid += interestPortion;
+
+    // Update next due date (optional, can be more sophisticated)
+    // For simplicity, we'll just advance it by one month for now
+    const currentNextDueDate = new Date(loan.nextDueDate);
+    currentNextDueDate.setMonth(currentNextDueDate.getMonth() + 1);
+    loan.nextDueDate = currentNextDueDate;
+
+    await loan.save();
+    res.status(200).json(loan); // Updated loan object return karein
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send('Server error');
+  }
+});
+
 
 module.exports = router;
 
