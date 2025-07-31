@@ -7,6 +7,7 @@ const investmentRoutes = require('./routes/investments');
 const fixedDepositRoutes = require('./routes/fixedDeposits');
 const loanRoutes = require('./routes/loans');
 const debtRoutes = require('./routes/debts');
+const expenseRoutes = require('./routes/expenses');
 const cors = require('cors'); // CORS middleware 
 const path = require('path'); 
 
@@ -30,6 +31,7 @@ app.use('/api/investments', investmentRoutes);
 app.use('/api/fixeddeposits', fixedDepositRoutes); 
 app.use('/api/loans', loanRoutes);
 app.use('/api/debts', debtRoutes);
+app.use('/api/expenses', expenseRoutes);
 
 // Basic route for testing
 app.get('/', (req, res) => {
