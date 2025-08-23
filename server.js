@@ -1,5 +1,10 @@
 const express = require('express');
 const dotenv = require('dotenv'); 
+const cors = require('cors'); // CORS middleware 
+const path = require('path'); 
+
+dotenv.config();
+
 const connectDB = require('./config/db'); 
 const authRoutes = require('./routes/auth'); // Authentication routes import kiye
 const bankAccountRoutes = require('./routes/bankAccounts');
@@ -10,18 +15,21 @@ const debtRoutes = require('./routes/debts');
 const expenseRoutes = require('./routes/expenses');
 const savingGoalRoutes = require('./routes/savingGoals');
 const dashboardRoutes = require('./routes/dashboard');
-const cors = require('cors'); // CORS middleware 
-const path = require('path'); 
+const googleRoutes = require('./routes/google');
 
-dotenv.config();
+
+
+
+console.log("Loaded Redirect URI:", process.env.GOOGLE_REDIRECT_URI);
 
 connectDB();
 
 const app = express(); 
 
 // Middleware
+app.use(cors());
 app.use(express.json()); // Body parser middleware: JSON request body ko parse karne ke liye
-app.use(cors()); // CORS enable karo, taki frontend se requests accept ho sakein
+ // CORS enable karo, taki frontend se requests accept ho sakein
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
@@ -36,6 +44,7 @@ app.use('/api/debts', debtRoutes);
 app.use('/api/expenses', expenseRoutes);
 app.use('/api/savinggoals', savingGoalRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/google', googleRoutes);
 
 // Basic route for testing
 app.get('/', (req, res) => {
